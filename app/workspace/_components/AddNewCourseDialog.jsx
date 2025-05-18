@@ -1,5 +1,5 @@
 "use client";
-
+import { v4 as uuidv4 } from 'uuid';
 import React, { useState } from 'react';
 import {
   Dialog, DialogContent, DialogDescription, DialogHeader,
@@ -9,12 +9,20 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+  Select,
+  SelectContent, 
+  SelectItem, 
+  SelectTrigger, 
+  SelectValue,
 } from "@/components/ui/select";
 import { Button } from '@/components/ui/button';
-import { Sparkle } from 'lucide-react';
+import { Loader2Icon, Sparkle } from 'lucide-react';
+import axios from 'axios';
+import { useRouter } from 'next/router';
 
 function AddNewCourseDialog({ children }) {
+
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -24,16 +32,34 @@ function AddNewCourseDialog({ children }) {
     category: ''
   });
 
+  // const router = useRouter();
   const onHandleInputChange = (field, value) => {
+    const parsedValue = field === 'noOfChapters' ? parseInt(value, 10) || 0 : value;
     setFormData(prev => ({
       ...prev,
-      [field]: value
+      [field]: parsedValue
     }));
   };
 
-  const onGenerate = () => {
+
+  const onGenerate =async () => {
     console.log(formData);
-    
+    const courseId = uuidv4();
+    try{
+      
+      setLoading(true);
+      const result = await axios.post('/api/generateCourseLayout',{
+        ...formData,
+        courseId:courseId,
+      });
+      console.log(result.data);
+      setLoading(false);
+      router.push('/workspace/edit-course' + result.data?.courseId);
+
+    }catch(e){
+      setLoading(false);
+      console.log(e);
+    }
   };
 
   return (
@@ -78,7 +104,9 @@ function AddNewCourseDialog({ children }) {
                 <Input placeholder="Category (separated by comma)" onChange={(e) => onHandleInputChange('category', e.target.value)} />
               </div>
               <div className='mt-5'>
-                <Button className='w-full' onClick={onGenerate}><Sparkle className="mr-2" />Generate Course</Button>
+                <Button className='w-full' onClick={onGenerate} disabled={loading} >
+                  {loading? <Loader2Icon className='animate-spin' /> : <Sparkle className="mr-2" />}
+                Generate Course</Button>
               </div>
             </div>
           </DialogDescription>

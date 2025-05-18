@@ -32,6 +32,10 @@ const PROMT = `Genrate Learning Course depends on following details. In which Ma
 }
 
 `
+
+export const ai = new GoogleGenAI({
+  apiKey:process.env.GEMINI_API_KEY,
+});
 export async function POST(req) {
     const {courseId,...formData} = await req.json();
     const user = await currentUser();

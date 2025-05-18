@@ -1,4 +1,5 @@
 "use client";
+
 import { v4 as uuidv4 } from 'uuid';
 import React, { useState } from 'react';
 import {
@@ -18,7 +19,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Loader2Icon, Sparkle } from 'lucide-react';
 import axios from 'axios';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 
 function AddNewCourseDialog({ children }) {
 
@@ -32,7 +33,7 @@ function AddNewCourseDialog({ children }) {
     category: ''
   });
 
-  // const router = useRouter();
+  const router = useRouter();
   const onHandleInputChange = (field, value) => {
     const parsedValue = field === 'noOfChapters' ? parseInt(value, 10) || 0 : value;
     setFormData(prev => ({
@@ -43,7 +44,7 @@ function AddNewCourseDialog({ children }) {
 
 
   const onGenerate =async () => {
-    console.log(formData);
+    // console.log(formData);
     const courseId = uuidv4();
     try{
       
@@ -52,9 +53,10 @@ function AddNewCourseDialog({ children }) {
         ...formData,
         courseId:courseId,
       });
-      console.log(result.data);
+      // console.log(result.data);
       setLoading(false);
-      router.push('/workspace/edit-course' + result.data?.courseId);
+      // router.push('/workspace/edit-course' + result.data?.courseId);
+      router.push(`/workspace/edit-course/${result.data?.courseId}`);
 
     }catch(e){
       setLoading(false);

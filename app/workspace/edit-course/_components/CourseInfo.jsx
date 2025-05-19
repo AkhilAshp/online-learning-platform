@@ -2,41 +2,33 @@
 
 import { Button } from '@/components/ui/button';
 import axios from 'axios';
-import { Book, Clock, Loader2Icon, Settings, TrendingUp } from 'lucide-react';
+import { Book, Clock, Loader2Icon, PlayCircle, Settings, TrendingUp } from 'lucide-react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import { toast } from 'sonner';
 
-function CourseInfo({ course }) {
+function CourseInfo({ course,viewCourse }) {
   const courseLayout = course?.courseJson?.course;
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const GenerateCourseContent = async () => {
-    if (!courseLayout || !course?.name || !course?.cid) {
-      console.warn("Missing course data");
-      return;
-    }
-
-    try {
+    try{
       setLoading(true);
-    //   console.log('Sending courseLayout:', courseLayout);
-
-      const result = await axios.post('/api/generateCourseContent', {
-        courseJson: courseLayout,
-        courseTitle: course?.name,
-        courseId: course?.cid,
+      const result = await axios.post('/api/generateCourseContent',{
+        courseJson:courseLayout, 
+        courseTitle:course?.name, 
+        courseId:course?.cid
       });
-
-    //   console.log(result.data);
-    router.replace('/workspace');
-    toast.success('Course Generated successfully');
-    } catch (error) {
-      console.error("API error:", error?.response?.data || error.message);
-      toast.error("Server Side error, Try Again!")
-    } finally {
+      console.log(result.data);
       setLoading(false);
+      toast.success("Course Generated Successfully");
+    }catch(e){
+      setLoading(false);
+      console.log(e);
+      toast.error("Server Side error, Try Again!")
     }
   };
 
@@ -70,10 +62,12 @@ function CourseInfo({ course }) {
           </div>
         </div>
 
-        <Button className='max-w-sm' onClick={GenerateCourseContent} disabled={loading}>
+        {!viewCourse? 
+        <Button className='max-w-lg' onClick={GenerateCourseContent} disabled={loading}>
           {loading ? <Loader2Icon className='animate-spin' /> : <Settings className="mr-2" />}
           Generate Content
-        </Button>
+        </Button>: 
+        <Link href={'/course/'+course?.cid}><Button><PlayCircle/>Continue Learning</Button></Link>}
       </div>
 
       <Image

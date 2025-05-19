@@ -26,16 +26,18 @@ const PROMT = `Genrate Learning Course depends on following details. In which Ma
             "imagePrompt": "string"
           }
         ]
-      }
-    ]
+    }
+  ]
   }
 }
 
-`
+`;
+
 
 export const ai = new GoogleGenAI({
   apiKey:process.env.GEMINI_API_KEY,
 });
+
 export async function POST(req) {
     const {courseId,...formData} = await req.json();
     const user = await currentUser();
@@ -67,13 +69,29 @@ export async function POST(req) {
     const RawResp = response?.candidates[0]?.content.parts[0]?.text;
     const RawJson = RawResp.replace('```json','').replace('```','');
     const JSONResp = JSON.parse(RawJson);
-    console.log(JSONResp);
+    console.log('json resp',JSONResp);
 
 
     
     //generate Image Banner
+    // const ImagePrompt = JSONResp.course?.imagePrompt;
+    // const bannerImageUrl =await GenerateImage(ImagePrompt);
+    //generate Image Banner
     const ImagePrompt = JSONResp.course?.imagePrompt;
-    const bannerImageUrl =await GenerateImage(ImagePrompt);
+    let bannerImageUrl;
+
+    if (ImagePrompt) {
+      try {
+        bannerImageUrl = await GenerateImage(ImagePrompt);
+      } catch (error) {
+        console.error("Image generation failed, using default image.", error);
+        bannerImageUrl = '/online-education.png'; 
+      }
+    } else {
+      console.warn("No imagePrompt found, using default image.");
+      bannerImageUrl = '/online-education.png'; 
+}
+
 
     //save to database
     const result = await db.insert(coursesTable).values({

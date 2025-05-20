@@ -1,6 +1,6 @@
 import { db } from '@/config/db';
 import { coursesTable } from '@/config/schema';
-import { currentUser } from '@clerk/nextjs/server';
+import { auth, currentUser } from '@clerk/nextjs/server';
 import {
     GoogleGenAI,
     } from '@google/genai';
@@ -41,6 +41,8 @@ export const ai = new GoogleGenAI({
 export async function POST(req) {
     const {courseId,...formData} = await req.json();
     const user = await currentUser();
+    // const {has}=await auth()
+    // const hasPremiumAccess = has({plan:'starter'})
     const ai = new GoogleGenAI({
         apiKey: process.env.GEMINI_API_KEY,
     });

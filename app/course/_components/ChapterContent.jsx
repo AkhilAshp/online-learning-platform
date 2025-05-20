@@ -19,15 +19,16 @@ function ChapterContent({courseInfo,refreshData}) {
     let completedChapter = enrollCourse?.completedChapters ?? [];
 
     const [loading, setLoading] = useState(false);
+
   const markChapterCompleted =async ()=>{
     setLoading(true);
-      completedChapter.push(selectedChapterIndex);
-      const result = await axios.put('/api/enroll-course',{
-        courseId:courseId,
-        completedChapter:completedChapter
+      const newCompleted = [...completedChapter, selectedChapterIndex];
+      await axios.put('/api/enroll-course', {
+        courseId,
+        completedChapter: newCompleted
       });
 
-      console.log(result);
+      // console.log(result);
       refreshData()
       
       toast.success('Chapter Marked Completed');
@@ -36,11 +37,10 @@ function ChapterContent({courseInfo,refreshData}) {
 
   const markInCompleteChapterCompleted =async ()=>{
     setLoading(true);
-    const completedChap = completedChapter.filter(item=>item!=selectedChapterIndex);
-      completedChapter.push(selectedChapterIndex);
-      const result = await axios.put('/api/enroll-course',{
-        courseId:courseId,
-        completedChapter:completedChap
+      const newCompleted = completedChapter.filter(i => i !== selectedChapterIndex);
+      await axios.put('/api/enroll-course', {
+        courseId,
+        completedChapter: newCompleted
       });
 
       console.log(result);

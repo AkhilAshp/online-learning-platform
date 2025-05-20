@@ -30,17 +30,7 @@ function AppSideBar() {
     {
       title:'My Learning',
       icon:Book,
-      path:'/workspace/my-courses',
-    },
-    {
-      title:'Explore Courses',
-      icon:Compass,
-      path:'/workspace/explore',
-    },
-    {
-      title:'AI Tools',
-      icon:PencilRulerIcon,
-      path:'/workspace/ai-tools',
+      path:'/workspace/my-learning',
     },
     {
       title:'Billing',
@@ -56,7 +46,7 @@ function AppSideBar() {
   return (
     <Sidebar>
       <SidebarHeader className={'p-4'}>
-        <Image src={'/logo.svg'} alt='logo' width={130} height={120} />
+        <Image src={'/logo.svg'} alt='logo' width={38} height={38} />
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
@@ -71,7 +61,7 @@ function AppSideBar() {
                 SideBarOptions.map((item,index) => (
                   <SidebarMenuItem key={index}>
                     <SidebarMenuButton asChild className={'p-5'}>
-                      <Link href={item.path} className={`text-[17px] ${path.includes(item.path) && 'text-primary bg-purple-100'}`}>
+                      <Link href={item.path} className={`text-[17px] ${path==item.path && 'text-primary bg-purple-100'}`}>
                       <item.icon className='h-7 w-7'/>
                       <span>{item.title}</span>
                       </Link>
